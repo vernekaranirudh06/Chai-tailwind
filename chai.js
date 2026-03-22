@@ -42,7 +42,11 @@ const classUtility={
     "top": "top",                    
     "left": "left",                  
     "right": "right",                
-    "bottom": "bottom",              
+    "bottom": "bottom",       
+    
+    "justify": "justifyContent",
+    "items": "alignItems",
+    "self": "alignSelf",
 }
 
 
@@ -124,21 +128,24 @@ function ApplyStyle(ele){
                 ele.style.color=value
             }
         } 
-        else if(isTypeValid(splitIndividualClass[1]) ){
-            const rawType = splitIndividualClass[1]   // "p"
-            const property = classUtility[rawType]   // "padding"
-            const value = splitIndividualClass[2]
+        else if(isTypeValid(splitIndividualClass[1])){
+    const rawType = splitIndividualClass[1]
+    const property = classUtility[rawType]
+    let value = splitIndividualClass[2]
 
-            if(isValueValid(value)){
-                //Case of padding and margin
-                ele.style[property]=value+"px"
-            }else{
-                // string case → bg, etc.
-                ele.style[property] = value
-            }
-            console.log("Type->",property)
-            console.log("Value->",value)
-        }
+    const valueMap = {
+        "between": "space-between",
+        "around": "space-around",
+        "evenly": "space-evenly"
+    }
+    value = valueMap[value] || value
+
+    if(isValueValid(value)){
+        ele.style[property]=value+"px"
+    }else{
+        ele.style[property] = value
+    }
+}
     });
 
 
