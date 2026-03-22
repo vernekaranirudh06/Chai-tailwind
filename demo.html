@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Demo — ChaiCSS</title>
+    <link rel="stylesheet" href="shared.css" />
+    <style>
+        main { padding-top: 60px; }
+
+        .demo-hero {
+            text-align: center;
+            padding: 3rem 2rem 2rem;
+        }
+
+        .demo-hero h1 {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(1.8rem, 4vw, 2.8rem);
+            font-weight: 800;
+            color: var(--text);
+            margin: 0.75rem 0 0.5rem;
+        }
+
+        .demo-hero p {
+            color: var(--text2);
+            font-size: 0.92rem;
+            line-height: 1.7;
+        }
+
+        /* Layout */
+        .demo-wrapper {
+            display: flex;
+            gap: 0;
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 2rem;
+            gap: 2rem;
+            align-items: flex-start;
+        }
+
+        @media (max-width: 900px) {
+            .demo-wrapper { flex-direction: column; }
+            .sections-col { width: 100%; }
+            .controls-col { width: 100%; position: static; }
+        }
+
+        /* LEFT — Sections */
+        .sections-col { flex: 1; display: flex; flex-direction: column; gap: 1.5rem; }
+
+        .demo-section {
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .demo-section:hover { border-color: var(--text3); }
+
+        .demo-section.active {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+
+        .section-label-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.6rem 1rem;
+            background: var(--surface2);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .section-name {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.72rem;
+            color: var(--text3);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .active-pill {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            background: var(--accent);
+            color: #fff;
+            padding: 2px 8px;
+            border-radius: 999px;
+            display: none;
+        }
+
+        .demo-section.active .active-pill { display: inline-block; }
+
+        .section-canvas {
+            padding: 2rem;
+            min-height: 140px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Applied classes strip */
+        .applied-strip {
+            padding: 0.5rem 1rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            min-height: 36px;
+        }
+
+        .applied-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.68rem;
+            background: var(--accent-glow);
+            color: var(--accent);
+            border: 1px solid var(--accent);
+            padding: 2px 8px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .applied-tag .remove {
+            cursor: pointer;
+            opacity: 0.6;
+            font-size: 0.75rem;
+            line-height: 1;
+        }
+
+        .applied-tag .remove:hover { opacity: 1; }
+
+        /* RIGHT — Controls */
+        .controls-col {
+            width: 300px;
+            flex-shrink: 0;
+            position: sticky;
+            top: 80px;
+        }
+
+        .controls-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+        }
+
+        .controls-header {
+            padding: 0.85rem 1.1rem;
+            background: var(--surface2);
+            border-bottom: 1px solid var(--border);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.72rem;
+            color: var(--text3);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .selected-indicator {
+            font-size: 0.68rem;
+            color: var(--accent);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .utility-group { padding: 0.85rem 1rem; border-bottom: 1px solid var(--border); }
+        .utility-group:last-child { border-bottom: none; }
+
+        .group-title {
+            font-size: 0.68rem;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text3);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 0.6rem;
+        }
+
+        .utility-btns {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+        }
+
+        .util-btn {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.72rem;
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            color: var(--text2);
+            padding: 4px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.15s;
+            user-select: none;
+        }
+
+        .util-btn:hover { background: var(--accent-glow); border-color: var(--accent); color: var(--accent); }
+        .util-btn.applied { background: var(--accent-glow); border-color: var(--accent); color: var(--accent); font-weight: 600; }
+
+        /* Reset */
+        .reset-all-btn {
+            width: 100%;
+            padding: 0.65rem;
+            background: transparent;
+            border: none;
+            border-top: 1px solid var(--border);
+            color: var(--text3);
+            font-size: 0.78rem;
+            cursor: pointer;
+            font-family: 'Instrument Sans', sans-serif;
+            transition: color 0.2s;
+        }
+
+        .reset-all-btn:hover { color: #ff6b6b; }
+
+        /* No section selected state */
+        .no-selection {
+            text-align: center;
+            padding: 2rem 1rem;
+            color: var(--text3);
+            font-size: 0.82rem;
+            line-height: 1.6;
+        }
+
+        .no-selection span { font-size: 1.5rem; display: block; margin-bottom: 0.5rem; }
+
+        /* Demo elements inside canvases */
+        .demo-card-el {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.25rem;
+            width: 100%;
+            max-width: 320px;
+            transition: all 0.3s;
+        }
+
+        .demo-text-el {
+            color: var(--text);
+            font-size: 1.1rem;
+            font-weight: 500;
+            transition: all 0.3s;
+            text-align: left;
+            width: 100%;
+            max-width: 340px;
+        }
+
+        .demo-layout-el {
+            display: flex;
+            gap: 8px;
+            width: 100%;
+            transition: all 0.3s;
+        }
+
+        .demo-layout-child {
+            background: var(--accent);
+            color: #fff;
+            padding: 10px 14px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            font-family: 'JetBrains Mono', monospace;
+            flex: 1;
+            text-align: center;
+        }
+
+        .demo-spacing-el {
+            background: var(--accent-glow);
+            border: 2px dashed var(--accent);
+            border-radius: 8px;
+            transition: all 0.3s;
+            display: inline-block;
+        }
+
+        .demo-spacing-inner {
+            background: var(--accent);
+            color: #fff;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            font-family: 'JetBrains Mono', monospace;
+            padding: 8px 16px;
+        }
+
+        .demo-color-el {
+            width: 140px;
+            height: 80px;
+            border-radius: 10px;
+            background: var(--surface2);
+            border: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text2);
+            transition: all 0.3s;
+        }
+
+        /* Inline style display */
+        .inline-style-bar {
+            background: var(--code-bg);
+            border-top: 1px solid var(--border);
+            padding: 0.5rem 1rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--text3);
+            white-space: nowrap;
+            overflow-x: auto;
+        }
+
+        .inline-style-bar .highlight { color: var(--accent); }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="index.html" class="nav-logo">☕ Chai<span>CSS</span></a>
+    <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="getting-started.html">Get Started</a></li>
+        <li><a href="docs.html">Docs</a></li>
+        <li><a href="demo.html" class="active">Demo</a></li>
+    </ul>
+    <div class="theme-toggle">
+        <button class="theme-btn" data-theme="light">Light</button>
+        <button class="theme-btn active" data-theme="dark">Dark</button>
+        <button class="theme-btn" data-theme="chai">Chai</button>
+    </div>
+</nav>
+
+<main>
+    <div class="demo-hero">
+        <span class="badge">Interactive Demo</span>
+        <h1>Click a section. Apply utilities.</h1>
+        <p>Select any section on the left, then click utilities on the right to apply chai-* classes live.</p>
+    </div>
+
+    <div class="demo-wrapper">
+
+        <!-- LEFT: Sections -->
+        <div class="sections-col">
+
+            <!-- 1. Card -->
+            <div class="demo-section" data-section="card" onclick="selectSection('card')">
+                <div class="section-label-bar">
+                    <span class="section-name">📦 Card / Box</span>
+                    <span class="active-pill">● active</span>
+                </div>
+                <div class="section-canvas">
+                    <div class="demo-card-el" id="target-card">
+                        <div style="font-weight:700;font-size:1rem;margin-bottom:6px;">ChaiCSS Card</div>
+                        <div style="font-size:0.83rem;color:var(--text2);">Apply utilities and watch this card transform in real time.</div>
+                    </div>
+                </div>
+                <div class="inline-style-bar" id="style-bar-card">style: —</div>
+                <div class="applied-strip" id="strip-card"></div>
+            </div>
+
+            <!-- 2. Typography -->
+            <div class="demo-section" data-section="text" onclick="selectSection('text')">
+                <div class="section-label-bar">
+                    <span class="section-name">🔤 Typography / Text</span>
+                    <span class="active-pill">● active</span>
+                </div>
+                <div class="section-canvas">
+                    <div class="demo-text-el" id="target-text">
+                        The quick brown fox jumps over the lazy dog. ☕
+                    </div>
+                </div>
+                <div class="inline-style-bar" id="style-bar-text">style: —</div>
+                <div class="applied-strip" id="strip-text"></div>
+            </div>
+
+            <!-- 3. Layout -->
+            <div class="demo-section" data-section="layout" onclick="selectSection('layout')">
+                <div class="section-label-bar">
+                    <span class="section-name">📐 Layout (Flex)</span>
+                    <span class="active-pill">● active</span>
+                </div>
+                <div class="section-canvas">
+                    <div class="demo-layout-el" id="target-layout">
+                        <div class="demo-layout-child">Box A</div>
+                        <div class="demo-layout-child">Box B</div>
+                        <div class="demo-layout-child">Box C</div>
+                    </div>
+                </div>
+                <div class="inline-style-bar" id="style-bar-layout">style: —</div>
+                <div class="applied-strip" id="strip-layout"></div>
+            </div>
+
+            <!-- 4. Spacing -->
+            <div class="demo-section" data-section="spacing" onclick="selectSection('spacing')">
+                <div class="section-label-bar">
+                    <span class="section-name">📏 Spacing</span>
+                    <span class="active-pill">● active</span>
+                </div>
+                <div class="section-canvas">
+                    <div class="demo-spacing-el" id="target-spacing">
+                        <div class="demo-spacing-inner">Content Block</div>
+                    </div>
+                </div>
+                <div class="inline-style-bar" id="style-bar-spacing">style: —</div>
+                <div class="applied-strip" id="strip-spacing"></div>
+            </div>
+
+            <!-- 5. Colors -->
+            <div class="demo-section" data-section="colors" onclick="selectSection('colors')">
+                <div class="section-label-bar">
+                    <span class="section-name">🎨 Colors</span>
+                    <span class="active-pill">● active</span>
+                </div>
+                <div class="section-canvas">
+                    <div class="demo-color-el" id="target-colors">color box</div>
+                </div>
+                <div class="inline-style-bar" id="style-bar-colors">style: —</div>
+                <div class="applied-strip" id="strip-colors"></div>
+            </div>
+
+        </div>
+
+        <!-- RIGHT: Controls -->
+        <div class="controls-col">
+            <div class="controls-box">
+                <div class="controls-header">
+                    <span>Utilities</span>
+                    <span class="selected-indicator" id="selectedLabel">← select a section</span>
+                </div>
+
+                <div id="no-selection" class="no-selection">
+                    <span>👆</span>
+                    Click any section on the left to start applying utilities
+                </div>
+
+                <div id="utility-panels" style="display:none;">
+
+                    <!-- Spacing group -->
+                    <div class="utility-group" id="group-spacing" style="display:none;">
+                        <div class="group-title">Padding</div>
+                        <div class="utility-btns">
+                            <button class="util-btn" data-class="chai-p-8">p-8</button>
+                            <button class="util-btn" data-class="chai-p-16">p-16</button>
+                            <button class="util-btn" data-class="chai-p-24">p-24</button>
+                            <button class="util-btn" data-class="chai-p-32">p-32</button>
+                            <button class="util-btn" data-class="chai-pt-16">pt-16</button>
+                            <button class="util-btn" data-class="chai-pb-16">pb-16</button>
+                            <button class="util-btn" data-class="chai-px-24">px-24</button>
+                            <button class="util-btn" data-class="chai-py-16">py-16</button>
+                        </div>
+                        <div class="group-title" style="margin-top:0.6rem;">Margin</div>
+                        <div class="utility-btns">
+                            <button class="util-btn" data-class="chai-m-8">m-8</button>
+                            <button class="util-btn" data-class="chai-m-16">m-16</button>
+                            <button class="util-btn" data-class="chai-mt-16">mt-16</button>
+                            <button class="util-btn" data-class="chai-mb-16">mb-16</button>
+                        </div>
+                    </div>
+
+                    <!-- Border group -->
+                    <div class="utility-group" id="group-border" style="display:none;">
+                        <div class="group-title">Border & Radius</div>
+                        <div class="utility-btns">
+                            <button class="util-btn" data-class="chai-border-1">border-1</button>
+                            <button class="util-btn" data-class="chai-border-2">border-2</button>
+                            <button class="util-btn" data-class="chai-border-3">border-3</button>
+                            <button class="util-btn" data-class="chai-rounded-4">rounded-4</button>
+                            <button class="util-btn" data-class="chai-rounded-8">rounded-8</button>
+                            <button class="util-btn" data-class="chai-rounded-16">rounded-16</button>
+                            <button class="util-btn" data-class="chai-rounded-999">rounded-999</button>
+                        </div>
+                    </div>
+
+                    <!-- Typography group -->
+                    <div class="utility-group" id="group-typography" style="display:none;">
+                        <div class="group-title">Font Size</div>
+                        <div class="utility-btns">
+                            <button class="util-btn" data-class="chai-text-12">text-12</button>
+                            <button class="util-btn" data-class="chai-text-16">text-16</button>
+                            <button class="util-btn" data-class="chai-text-20">text-20</button>
+                            <button class="util-btn" data-class="chai-text-28">text-28</button>
+                            <button class="util-btn" data-class="chai-text-36">text-36</button>
+                        </div>
+                        <div class="group-title" style="margin-top:0.6rem;">Font Weight</div>
+                        <div class="utility-btns">
+                            <button class="util-btn" data-class="chai-fontWeight-400">fw-400</button>
+                            <button class="util-btn" data-class="chai-fontWeight-600">fw-600</button>
+                            <button class="util-btn" data-class="chai-fontWeight-700">fw-700</button>
+                            <button class="util-btn" data-class="chai-fontWeight-800">fw-800</button>
+                        </div>
+                        <div class="group-title" style="margin-top:0.6rem;">Alignment</div>
+                        <div class="utility-btns">
+                            <button class="util-btn" data-class="chai-text-left">left</button>
+                            <button class="util-btn" data-class="chai-text-center">center</button>
+                            <button class="util-btn" data-class="chai-text-right">right</button>
+                        </div>
+                        <div class="group-title" style="margin-top:0.6rem;">Line Height</div>
+                        <div class="utility-btns">
+                            <button class="util-btn" data-class="chai-leading-16">leading-16</button>
+                            <button class="util-btn" data-class="chai-leading-24">leading-24</button>
+                            <button class="util-btn" data-class="chai-leading-32">leading-32</button>
+                        </div>
+                    </div>
+
+                    <!-- Colors group -->
+                    <div class="utility-group" id="group-colors" style="display:none;">
+                        <div class="group-title">Background</div>
+                        <div class="utility-btns">
+                            <button class="util-btn" data-class="chai-bg-tomato">bg-tomato</button>
+                            <button class="util-btn" data-class="chai-bg-steelblue">bg-steelblue</button>
+                            <button class="util-btn" data-class="chai-bg-seagreen">bg-seagreen</button>
+                            <button class="util-btn" data-class="chai-bg-orange">bg-orange</button>
+                            <button class="util-btn" data-class="chai-bg-purple">bg-purple</button>
+                            <button class="util-btn" data-class="chai-bg-gold">bg-gold</button>
+                            <button class="util-btn" data-class="chai-bg-black">bg-black</button>
+                            <button class="util-btn" data-class="chai-bg-white">bg-white</button>
+                        </div>
+                        <div class="group-title" style="margin-top:0.6rem;">Text Color</div>
+                        <div class="utility-btns">
+                            <button class="util-btn" data-class="chai-text-white">text-white</button>
+                            <button class="util-btn" data-class="chai-text-black">text-black</button>
+                            <button class="util-btn" data-class="chai-text-tomato">text-tomato</button>
+                            <button class="util-btn" data-class="chai-text-gold">text-gold</button>
+                            <button class="util-btn" data-class="chai-text-steelblue">text-steelblue</button>
+                        </div>
+                        <div class="group-title" style="margin-top:0.6rem;">Opacity</div>
+                        <div class="utility-btns">
+                            <button class="util-btn" data-class="chai-opacity-0.3">opacity-0.3</button>
+                            <button class="util-btn" data-class="chai-opacity-0.6">opacity-0.6</button>
+                            <button class="util-btn" data-class="chai-opacity-1">opacity-1</button>
+                        </div>
+                    </div>
+
+                    <!-- Layout group -->
+                    <div class="utility-group" id="group-layout" style="display:none;">
+                        <div class="group-title">Display</div>
+                        <div class="utility-btns">
+                            <button class="util-btn" data-class="chai-flex">flex</button>
+                            <button class="util-btn" data-class="chai-block">block</button>
+                            <button class="util-btn" data-class="chai-hidden">hidden</button>
+                        </div>
+                        <div class="group-title" style="margin-top:0.6rem;">Flex Direction</div>
+                        <div class="utility-btns">
+                            <button class="util-btn" data-class="chai-flex-row">flex-row</button>
+                            <button class="util-btn" data-class="chai-flex-col">flex-col</button>
+                            <button class="util-btn" data-class="chai-flex-row-reverse">row-reverse</button>
+                            <button class="util-btn" data-class="chai-flex-col-reverse">col-reverse</button>
+                        </div>
+                        <div class="group-title" style="margin-top:0.6rem;">Gap</div>
+                        <div class="utility-btns">
+                            <button class="util-btn" data-class="chai-gap-4">gap-4</button>
+                            <button class="util-btn" data-class="chai-gap-12">gap-12</button>
+                            <button class="util-btn" data-class="chai-gap-24">gap-24</button>
+                        </div>
+                    </div>
+
+                    <!-- Sizing group -->
+                    <div class="utility-group" id="group-sizing" style="display:none;">
+                        <div class="group-title">Width & Height</div>
+                        <div class="utility-btns">
+                            <button class="util-btn" data-class="chai-w-100">w-100</button>
+                            <button class="util-btn" data-class="chai-w-200">w-200</button>
+                            <button class="util-btn" data-class="chai-h-60">h-60</button>
+                            <button class="util-btn" data-class="chai-h-100">h-100</button>
+                            <button class="util-btn" data-class="chai-h-140">h-140</button>
+                        </div>
+                    </div>
+
+                </div>
+
+                <button class="reset-all-btn" id="resetBtn" onclick="resetSection()">↺ Reset Section</button>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script src="theme.js"></script>
+<script src="chai.js"></script>
+<script>
+// Section → which groups to show + which target element
+const SECTION_CONFIG = {
+    card:    { label: 'card / box',    groups: ['spacing', 'border', 'colors', 'sizing'] },
+    text:    { label: 'typography',    groups: ['typography', 'colors'] },
+    layout:  { label: 'layout',        groups: ['layout', 'spacing'] },
+    spacing: { label: 'spacing',       groups: ['spacing', 'border'] },
+    colors:  { label: 'colors',        groups: ['colors', 'sizing'] },
+};
+
+let activeSection = null;
+
+// Track applied classes per section: { sectionId: Set of classNames }
+const appliedClasses = {
+    card: new Set(),
+    text: new Set(),
+    layout: new Set(),
+    spacing: new Set(),
+    colors: new Set(),
+};
+
+function selectSection(id) {
+    // Deactivate previous
+    document.querySelectorAll('.demo-section').forEach(s => s.classList.remove('active'));
+    // Activate new
+    document.querySelector(`[data-section="${id}"]`).classList.add('active');
+    activeSection = id;
+
+    // Update label
+    document.getElementById('selectedLabel').textContent = SECTION_CONFIG[id].label;
+
+    // Show/hide groups
+    document.getElementById('no-selection').style.display = 'none';
+    document.getElementById('utility-panels').style.display = 'block';
+
+    const allGroups = ['spacing', 'border', 'typography', 'colors', 'layout', 'sizing'];
+    allGroups.forEach(g => {
+        document.getElementById('group-' + g).style.display =
+            SECTION_CONFIG[id].groups.includes(g) ? 'block' : 'none';
+    });
+
+    // Sync button states with already applied classes
+    syncButtonStates(id);
+}
+
+function getTarget(id) {
+    return document.getElementById('target-' + id);
+}
+
+function updateStyleBar(id) {
+    const el = getTarget(id);
+    const style = el.style.cssText;
+    const bar = document.getElementById('style-bar-' + id);
+    bar.innerHTML = style
+        ? `<span style="color:var(--text3)">style:</span> <span class="highlight">${style}</span>`
+        : `<span style="color:var(--text3)">style: —</span>`;
+}
+
+function updateStrip(id) {
+    const strip = document.getElementById('strip-' + id);
+    strip.innerHTML = '';
+    appliedClasses[id].forEach(cls => {
+        const tag = document.createElement('span');
+        tag.className = 'applied-tag';
+        tag.innerHTML = `${cls} <span class="remove" onclick="removeChaiClass('${id}','${cls}')">✕</span>`;
+        strip.appendChild(tag);
+    });
+}
+
+function syncButtonStates(id) {
+    document.querySelectorAll('.util-btn').forEach(btn => {
+        btn.classList.toggle('applied', appliedClasses[id].has(btn.dataset.class));
+    });
+}
+
+function applyChaiClass(cls) {
+    if (!activeSection) return;
+    const el = getTarget(activeSection);
+
+    // Remove conflicting classes in same "group" before applying
+    // e.g. only one bg-, one text-size, one text-align etc.
+    const prefix = getClassPrefix(cls);
+    if (prefix) {
+        appliedClasses[activeSection].forEach(existing => {
+            if (getClassPrefix(existing) === prefix && existing !== cls) {
+                appliedClasses[activeSection].delete(existing);
+                el.classList.remove(existing);
+            }
+        });
+    }
+
+    const isApplied = appliedClasses[activeSection].has(cls);
+    if (isApplied) {
+        // Toggle off
+        appliedClasses[activeSection].delete(cls);
+        el.classList.remove(cls);
+    } else {
+        appliedClasses[activeSection].add(cls);
+        el.classList.add(cls);
+    }
+
+    // Re-run chai engine on this element
+    ApplyStyle(el);
+    updateStyleBar(activeSection);
+    updateStrip(activeSection);
+    syncButtonStates(activeSection);
+}
+
+function getClassPrefix(cls) {
+    // Returns a "conflict group" key so mutually exclusive classes replace each other
+    if (/^chai-bg-/.test(cls)) return 'bg';
+    if (/^chai-text-(left|right|center|justify|start|end)$/.test(cls)) return 'text-align';
+    if (/^chai-text-\d+$/.test(cls)) return 'text-size';
+    if (/^chai-fontWeight-/.test(cls)) return 'fontWeight';
+    if (/^chai-leading-/.test(cls)) return 'leading';
+    if (/^chai-opacity-/.test(cls)) return 'opacity';
+    if (/^chai-flex-(row|col)/.test(cls)) return 'flex-dir';
+    if (/^chai-gap-/.test(cls)) return 'gap';
+    if (/^chai-p-\d+$/.test(cls)) return 'p';
+    if (/^chai-rounded-/.test(cls)) return 'rounded';
+    if (/^chai-border-\d+$/.test(cls)) return 'border';
+    if (/^chai-w-/.test(cls)) return 'w';
+    if (/^chai-h-/.test(cls)) return 'h';
+    return null;
+}
+
+function removeChaiClass(id, cls) {
+    const el = getTarget(id);
+    appliedClasses[id].delete(cls);
+    el.classList.remove(cls);
+    // Reset that specific style property by re-running without it
+    el.removeAttribute('style');
+    appliedClasses[id].forEach(c => el.classList.add(c));
+    ApplyStyle(el);
+    updateStyleBar(id);
+    updateStrip(id);
+    if (activeSection === id) syncButtonStates(id);
+}
+
+function resetSection() {
+    if (!activeSection) return;
+    const el = getTarget(activeSection);
+    appliedClasses[activeSection].clear();
+    el.removeAttribute('style');
+    el.className = el.className.split(' ').filter(c => !c.startsWith('chai-')).join(' ');
+    updateStyleBar(activeSection);
+    updateStrip(activeSection);
+    syncButtonStates(activeSection);
+}
+
+// Wire all utility buttons
+document.querySelectorAll('.util-btn').forEach(btn => {
+    btn.addEventListener('click', () => applyChaiClass(btn.dataset.class));
+});
+
+// Select first section by default
+selectSection('card');
+</script>
+</body>
+</html>

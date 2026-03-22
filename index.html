@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ChaiCSS — Utility-first CSS Engine</title>
+    <link rel="stylesheet" href="shared.css" />
+    <style>
+        /* Raw CSS only where chai-* can't handle (hover, animations, pseudo) */
+        main { padding-top: 60px; }
+
+        /* Hero */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 4rem 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+        }
+
+        .hero-eyebrow {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--accent);
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
+            animation: fadeUp 0.6s ease both;
+        }
+
+        .hero-title {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(3rem, 8vw, 6.5rem);
+            font-weight: 800;
+            line-height: 1;
+            letter-spacing: -0.03em;
+            color: var(--text);
+            margin-bottom: 1.5rem;
+            animation: fadeUp 0.6s 0.1s ease both;
+        }
+
+        .hero-title .accent { color: var(--accent); }
+
+        .hero-sub {
+            font-size: 1.1rem;
+            color: var(--text2);
+            max-width: 540px;
+            line-height: 1.7;
+            margin-bottom: 2.5rem;
+            animation: fadeUp 0.6s 0.2s ease both;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: fadeUp 0.6s 0.3s ease both;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #fff;
+            padding: 0.8rem 2rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+            border: 2px solid var(--accent);
+        }
+
+        .btn-primary:hover {
+            background: var(--accent2);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px var(--accent-glow);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text);
+            padding: 0.8rem 2rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+            border: 2px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        /* Code preview */
+        .code-preview {
+            margin-top: 4rem;
+            width: 100%;
+            max-width: 680px;
+            animation: fadeUp 0.6s 0.4s ease both;
+        }
+
+        /* Features */
+        .section {
+            padding: 5rem 2rem;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .section-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--accent);
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            margin-bottom: 0.75rem;
+        }
+
+        .section-title {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(1.8rem, 4vw, 2.8rem);
+            font-weight: 800;
+            color: var(--text);
+            line-height: 1.15;
+            margin-bottom: 3rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .feature-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 1.8rem;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: var(--accent);
+            transform: scaleX(0);
+            transition: transform 0.3s;
+        }
+
+        .feature-card:hover { border-color: var(--accent); transform: translateY(-4px); }
+        .feature-card:hover::before { transform: scaleX(1); }
+
+        .feature-icon {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-title {
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: var(--text);
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-desc {
+            color: var(--text2);
+            font-size: 0.88rem;
+            line-height: 1.65;
+        }
+
+        /* Demo strip */
+        .demo-strip {
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            padding: 4rem 2rem;
+        }
+
+        .demo-grid {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        @media (max-width: 768px) {
+            .demo-grid { grid-template-columns: 1fr; }
+        }
+
+        .demo-preview {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        /* Utility classes list */
+        .utils-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .util-tag {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 4px 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--accent);
+            transition: all 0.2s;
+        }
+
+        .util-tag:hover {
+            background: var(--accent-glow);
+            border-color: var(--accent);
+        }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 2rem;
+            text-align: center;
+            color: var(--text3);
+            font-size: 0.82rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        footer a { color: var(--accent); text-decoration: none; }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+    <a href="index.html" class="nav-logo">☕ Chai<span>CSS</span></a>
+    <ul class="nav-links">
+        <li><a href="index.html" class="active">Home</a></li>
+        <li><a href="getting-started.html">Get Started</a></li>
+        <li><a href="docs.html">Docs</a></li>
+        <li><a href="demo.html">Demo</a></li>
+    </ul>
+    <div class="theme-toggle">
+        <button class="theme-btn" data-theme="light">Light</button>
+        <button class="theme-btn active" data-theme="dark">Dark</button>
+        <button class="theme-btn" data-theme="chai">Chai</button>
+    </div>
+</nav>
+
+<main>
+    <!-- HERO -->
+    <section class="hero">
+        <p class="hero-eyebrow">✦ Utility-first CSS Engine in Vanilla JS</p>
+        <h1 class="hero-title">Style with<br/><span class="accent">chai-*</span> classes</h1>
+        <p class="hero-sub">
+            A lightweight, zero-dependency CSS engine. Write expressive utility class names — ChaiCSS parses them and applies inline styles instantly.
+        </p>
+        <div class="hero-actions">
+            <a href="getting-started.html" class="btn-primary">Get Started →</a>
+            <a href="demo.html" class="btn-secondary">Try Demo</a>
+        </div>
+
+        <div class="code-preview">
+            <div class="code-block" style="text-align:left;">
+                <button class="copy-btn">copy</button>
+                <code>&lt;<span class="keyword">div</span> class=<span class="string">"chai-p-20 chai-bg-#1a1a1a chai-rounded-12 chai-flex"</span>&gt;
+  &lt;<span class="keyword">h1</span> class=<span class="string">"chai-text-32 chai-text-white chai-fontWeight-700"</span>&gt;
+    Hello, ChaiCSS ☕
+  &lt;/<span class="keyword">h1</span>&gt;
+&lt;/<span class="keyword">div</span>&gt;</code>
+            </div>
+        </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section class="section">
+        <p class="section-label">Why ChaiCSS</p>
+        <h2 class="section-title">Everything you need,<br/>nothing you don't.</h2>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <div class="feature-title">Zero Dependencies</div>
+                <div class="feature-desc">Pure vanilla JS. No build step, no npm, no config. Just drop <code style="color:var(--accent);font-family:'JetBrains Mono',monospace;font-size:0.8em">chai.js</code> in your HTML and go.</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🧠</div>
+                <div class="feature-title">Smart Parser</div>
+                <div class="feature-desc">Intelligent class name parsing handles spacing, colors, typography, layout, borders and more from a single utility map.</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎨</div>
+                <div class="feature-title">Utility-first</div>
+                <div class="feature-desc">Inspired by Tailwind, built from scratch. Write <code style="color:var(--accent);font-family:'JetBrains Mono',monospace;font-size:0.8em">chai-p-16</code> and get <code style="color:var(--accent);font-family:'JetBrains Mono',monospace;font-size:0.8em">padding: 16px</code> — instantly.</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📐</div>
+                <div class="feature-title">Layout Support</div>
+                <div class="feature-desc">Flex, grid, block, inline, hidden — full display control with directional flex utilities like <code style="color:var(--accent);font-family:'JetBrains Mono',monospace;font-size:0.8em">chai-flex-col-reverse</code>.</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔤</div>
+                <div class="feature-title">Typography</div>
+                <div class="feature-desc">Control font size, weight, line height, letter spacing, text alignment and color with intuitive class names.</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📦</div>
+                <div class="feature-title">Lightweight</div>
+                <div class="feature-desc">The entire engine is under 100 lines of clean, readable JavaScript. Easy to understand, extend and contribute to.</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- DEMO STRIP -->
+    <div class="demo-strip">
+        <div class="demo-grid">
+            <div>
+                <p class="section-label">Live Demo</p>
+                <h2 class="section-title" style="font-size:1.9rem;margin-bottom:1rem;">See it in action</h2>
+                <p style="color:var(--text2);line-height:1.7;margin-bottom:1.5rem;font-size:0.92rem;">
+                    The card on the right is styled entirely with <code style="color:var(--accent);font-family:'JetBrains Mono',monospace;font-size:0.85em">chai-*</code> classes. No external CSS was written for it.
+                </p>
+                <div class="code-block" style="font-size:0.76rem;">
+                    <code><span class="comment">/* All these are chai-* classes */</span>
+chai-p-24
+chai-rounded-16
+chai-bg-<span class="string">#f5a623</span>
+chai-text-center
+chai-fontWeight-700
+chai-text-20</code>
+                </div>
+            </div>
+            <div class="demo-preview">
+                <!-- Styled purely with chai-* — chai.js handles it -->
+                <div class="chai-p-20 chai-rounded-12 chai-text-center" style="background:var(--accent);color:#fff;">
+                    <div class="chai-text-32 chai-fontWeight-700 chai-mb-4">☕</div>
+                    <div class="chai-fontWeight-700 chai-text-18 chai-mb-8">ChaiCSS Card</div>
+                    <div class="chai-text-14" style="opacity:0.85">Styled with chai-* only</div>
+                </div>
+                <div class="chai-flex chai-gap-8" style="gap:8px;">
+                    <div class="chai-p-12 chai-rounded-8 chai-flex-1" style="background:var(--surface2);border:1px solid var(--border);flex:1;">
+                        <div class="chai-text-12" style="color:var(--text3);font-family:'JetBrains Mono',monospace;">chai-p-12</div>
+                        <div class="chai-fontWeight-600 chai-text-14" style="color:var(--text);">Padding</div>
+                    </div>
+                    <div class="chai-p-12 chai-rounded-8" style="background:var(--surface2);border:1px solid var(--border);flex:1;">
+                        <div class="chai-text-12" style="color:var(--text3);font-family:'JetBrains Mono',monospace;">chai-rounded-8</div>
+                        <div class="chai-fontWeight-600 chai-text-14" style="color:var(--text);">Radius</div>
+                    </div>
+                </div>
+                <div class="chai-p-12 chai-rounded-8" style="background:var(--surface2);border:1px solid var(--border);">
+                    <div class="chai-text-12 chai-mb-4" style="color:var(--text3);font-family:'JetBrains Mono',monospace;">chai-flex + chai-gap-*</div>
+                    <div style="display:flex;gap:6px;">
+                        <span style="background:var(--accent);width:12px;height:12px;border-radius:50%;display:inline-block;"></span>
+                        <span style="background:var(--accent);width:12px;height:12px;border-radius:50%;display:inline-block;opacity:0.7"></span>
+                        <span style="background:var(--accent);width:12px;height:12px;border-radius:50%;display:inline-block;opacity:0.4"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- UTILITIES -->
+    <section class="section">
+        <p class="section-label">Utilities</p>
+        <h2 class="section-title" style="margin-bottom:1rem;">All supported classes</h2>
+        <p style="color:var(--text2);margin-bottom:1.5rem;font-size:0.9rem;">A quick look at what's available out of the box.</p>
+        <div class="utils-grid">
+            <span class="util-tag">chai-p-{n}</span>
+            <span class="util-tag">chai-pt-{n}</span>
+            <span class="util-tag">chai-pb-{n}</span>
+            <span class="util-tag">chai-pl-{n}</span>
+            <span class="util-tag">chai-pr-{n}</span>
+            <span class="util-tag">chai-px-{n}</span>
+            <span class="util-tag">chai-py-{n}</span>
+            <span class="util-tag">chai-m-{n}</span>
+            <span class="util-tag">chai-mt-{n}</span>
+            <span class="util-tag">chai-mb-{n}</span>
+            <span class="util-tag">chai-ml-{n}</span>
+            <span class="util-tag">chai-mr-{n}</span>
+            <span class="util-tag">chai-mx-{n}</span>
+            <span class="util-tag">chai-my-{n}</span>
+            <span class="util-tag">chai-w-{n}</span>
+            <span class="util-tag">chai-h-{n}</span>
+            <span class="util-tag">chai-minW-{n}</span>
+            <span class="util-tag">chai-maxW-{n}</span>
+            <span class="util-tag">chai-bg-{color}</span>
+            <span class="util-tag">chai-text-{color}</span>
+            <span class="util-tag">chai-text-{n}</span>
+            <span class="util-tag">chai-text-center</span>
+            <span class="util-tag">chai-fontWeight-{n}</span>
+            <span class="util-tag">chai-fontSize-{n}</span>
+            <span class="util-tag">chai-leading-{n}</span>
+            <span class="util-tag">chai-tracking-{n}</span>
+            <span class="util-tag">chai-rounded-{n}</span>
+            <span class="util-tag">chai-border-{n}</span>
+            <span class="util-tag">chai-borderWidth-{n}</span>
+            <span class="util-tag">chai-flex</span>
+            <span class="util-tag">chai-flex-col</span>
+            <span class="util-tag">chai-flex-row-reverse</span>
+            <span class="util-tag">chai-flex-col-reverse</span>
+            <span class="util-tag">chai-grid</span>
+            <span class="util-tag">chai-block</span>
+            <span class="util-tag">chai-hidden</span>
+            <span class="util-tag">chai-gap-{n}</span>
+            <span class="util-tag">chai-opacity-{n}</span>
+            <span class="util-tag">chai-z-{n}</span>
+            <span class="util-tag">chai-top-{n}</span>
+            <span class="util-tag">chai-left-{n}</span>
+        </div>
+        <div style="margin-top:2rem;">
+            <a href="docs.html" class="btn-primary">View Full Docs →</a>
+        </div>
+    </section>
+</main>
+
+<footer>
+    <p>Built with ☕ by you &nbsp;·&nbsp; <a href="docs.html">Docs</a> &nbsp;·&nbsp; <a href="demo.html">Demo</a></p>
+    <p style="margin-top:0.5rem;color:var(--text3);">ChaiCSS — your own utility-first CSS engine</p>
+</footer>
+
+<script src="theme.js"></script>
+<script src="chai.js"></script>
+</body>
+</html>
